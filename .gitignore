@@ -1,0 +1,10 @@
+# Depot drafts（草稿文件）
+depot/*/*/drafts/
+*.draft.json
+
+# 临时报告目录
+test_reports/
+
+# 保留示例文档和模板
+!docs/templates/examples/
+!docs/templates/*.template.md
