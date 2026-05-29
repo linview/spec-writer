@@ -1,23 +1,25 @@
 # 工程规范文档模板说明
 
-> ⚠️ **重要提示**：这些模板由 **spec-writer agent** 使用，不是让你手动填空！
+> ⚠️ **重要提示**：这些模板由 **spec-writer skill** 使用，不是让你手动填空！
 >
-> 请使用 `/spec create` 让 AI 助手帮你生成文档。
+> 请使用 `/spec-writer` 通过对话让 AI 助手帮你生成文档。
 
 ---
 
 ## 📁 模板文件
 
-| 文件 | 版本 | 说明 |
-|------|------|------|
-| `all_in_one.template.md` | v1.1.0 | All-in-One 三段论文档（BRD + PRD + Design Spec） |
-| `examples/all_in_one.example.md` | - | 示例文档（参考用） |
+| 文件 | 版本 | 输出模式 | 说明 |
+|------|------|---------|------|
+| `all_in_one.template.md` | v1.1.0 | 单文件 | All-in-One 三段论文档（BRD + PRD + Design Spec） |
+| `brd_prd.template.md` | v1.1.0 | 单文件 | BRD + PRD 两段论文档（不含技术方案），适合产品经理/业务方 |
+| `hld_backend.template.md` | v1.0.0 | **分片** | 后端架构设计文档（10 个分片），需配合 BRD/PRD 父文档使用 |
+| `examples/all_in_one.example.md` | - | - | 示例文档（参考用） |
 
 ---
 
 ## 🎯 模板结构
 
-### All-in-One 模板（all_in_one.template.md）
+### 1. All-in-One 模板（all_in_one.template.md v1.1.0）
 
 **定位**：方案论证专用文档（不包含项目管理内容）
 
@@ -46,79 +48,48 @@
    - 父文档、子特性、依赖文档、参考资料
 ```
 
-### 模板 Metadata
+### 2. BRD+PRD 模板（brd_prd.template.md v1.1.0）
 
-```yaml
----
-template_version: "1.1.0"
-template_name: "all_in_one"
-template_type: "project_spec"
-description: "All-in-One 三段论文档（BRD + PRD + Design Spec）- 方案论证专用"
-supported_sections:
-  - brd
-  - prd
-  - design
-  - technical_implementation
-  - technical_risks
-  - technical_debt
-  - appendix
-compatible_with: "spec-writer v1.1"
----
+**定位**：业务需求和产品需求两段论文档（不包含技术方案），适合产品经理/业务方使用。
+
+**章节结构**：
+
+```
+1. 前置知识（可选）
+2. BRD（业务需求描述）
+3. PRD（产品需求描述）
+4. 流程图建议（醒目提醒）
+5. 业务流程可视化（可选）
+6. UI/UX 需求（可选）
+7. 后续建议
 ```
 
----
+### 3. 后端架构设计模板（hld_backend.template.md v1.0.0）
 
-## 📚 章节说明
+**定位**：后端架构设计文档，从宏观到微观定义后端系统架构。**必须配合 BRD/PRD 父文档使用**。
 
-### BRD 部分（业务需求描述）
+**输出模式**：分片（`output_mode: "sharded"`）— 一个模板生成一组独立文件，每个分片可独立供 AI coding agent 消费。
 
-回答 **"为什么做"**（Why）
+**10 个分片**：
 
-| 章节 | 说明 | 关键点 |
-|------|------|--------|
-| 需求背景 | 描述业务痛点 | 痛点是什么？为什么现在要做？ |
-| 客户是谁 | 目标客户和投入成本 | 谁会使用？投入多少时间/金钱/人力？ |
-| 预期收益 | 量化项目价值 | 收益类型（效率/成本/收入）、收益规模 |
-| ROI 分析 | 评估投资回报率 | ROI = (收益 - 成本) / 成本，> 0 值得做 |
+| 分片 | 文件名 | 条件 | 依赖 |
+|------|--------|------|------|
+| 全局字典 | `{project}_glossary_v{version}.md` | 必选 | 无 |
+| 系统架构 | `{project}_system-architecture_v{version}.md` | 必选 | glossary |
+| 数据模型 | `{project}_data-model_v{version}.md` | 有状态服务 | system_architecture |
+| 服务功能 | `{project}_service-{service_name}_v{version}.md` | 必选（可多文件） | system_architecture, data_model |
+| 接口协议 | `{project}_api-spec_v{version}.md` | 必选 | service_functions |
+| 系统集成 | `{project}_integration_v{version}.md` | 必选 | interface_protocols |
+| 部署方案 | `{project}_deployment_v{version}.md` | 必选 | system_architecture |
+| 测试验收 | `{project}_test-plan_v{version}.md` | 必选 | service_functions, interface_protocols |
+| 附加方案 | `{project}_{plan_name}_v{version}.md` | 有特化需求 | system_architecture |
+| FAQ | `{project}_faq_v{version}.md` | 必选 | 无 |
 
-### PRD 部分（产品需求描述）
+**附加产物**：
+- `metadata.json` — 分片组目录（状态跟踪）
+- `changelog.jsonl` — 迭代历史（追加式）
 
-回答 **"做什么"**（What）
-
-| 章节 | 说明 | 关键点 |
-|------|------|--------|
-| 功能范围/边界 | 明确项目边界 | In Scope（做）vs Out of Scope（不做） |
-| 用户场景 | 用户如何使用 | 用户画像、典型场景、操作步骤 |
-| 功能需求 | 功能清单 | 功能编号（F-001）、优先级（P0/P1/P2）、验收标准 |
-| 非功能需求 | 质量属性 | 性能、安全、可用性、兼容性 |
-| UI/UX 需求 | 界面和体验 | **可选**（CLI 工具项目跳过） |
-
-### Design Spec 部分（技术方案设计）
-
-回答 **"怎么做"**（How）
-
-| 章节 | 说明 | 关键点 |
-|------|------|--------|
-| 前端设计 | 应用层/接入层 | 技术栈（React/Vue/CLI）、核心功能、接口对接 |
-| 后端设计 | 服务层/调度层 | 技术栈（Go/Java/Python）、核心服务、业务逻辑 |
-| 数据库设计 | 数据层/中间层 | 存储方案（PostgreSQL/Redis）、数据模型、中间件 |
-
-### 技术实施要点（v1.1.0 新增）
-
-| 章节 | 说明 |
-|------|------|
-| 技术依赖 | 外部依赖（GitLab API）、内部依赖（父系统）、环境依赖 |
-| 集成方式 | 与现有系统集成、数据流转、接口对接 |
-| 技术风险 | **仅**技术风险、性能风险、安全风险（不包含进度/人力风险） |
-| 验收要点 | 功能验收、性能验收、安全验收（技术方案验收标准） |
-
-### 技术债务与已知问题（v1.1.0 新增）
-
-| 章节 | 说明 |
-|------|------|
-| 技术债务 | 代码重构、架构优化（不包含项目管理任务） |
-| 已知问题 | 技术问题和限制 |
-| 未来优化 | 技术优化方向（非项目管理功能规划） |
+**版本策略**：SemVer 2.0，初始版本 `0.1.0`。PRD 变更触发 minor bump，架构重构触发 major bump。
 
 ---
 
@@ -139,102 +110,40 @@ compatible_with: "spec-writer v1.1"
 ### ⭐ 推荐：使用 spec-writer Skill（AI 驱动）
 
 ```bash
-# 启动 spec-writer Skill
 /spec-writer
-
-# 通过对话告诉 AI 你想做什么
-You: 我想创建一个新功能的方案文档
-AI: 好的，我来帮你创建。请选择文档粒度：
-     - project（新项目立项）
-     - feature（新功能开发）
-     - enhance（功能优化）
-     - fix（Bug 修复）
-
-[AI 通过对话引导你完成文档...]
-
-# AI 会自动：
-# 1. 扫描并加载模板
-# 2. 通过对话引导你填写
-# 3. 基于前置知识智能推断
-# 4. 自动生成文档
-# 5. 自动评分并给出改进建议
-
-# 耗时：5-15 分钟（取决于是否提供前置知识）
 ```
 
-**优势**：
-- ✅ 对话式引导，不会遗漏章节
-- ✅ 智能推断，80% 内容自动推荐
-- ✅ 自动评分，知道写得好不好
-- ✅ 格式规范，YAML metadata 自动生成
+通过对话告诉 AI 你想做什么，AI 会自动扫描模板、引导填写、智能推断、生成文档并评分。
 
 ### ❌ 错误的使用方式
 
-**不要使用这些命令**（与 Claude Code 冲突）：
 ```bash
 # ❌ 错误：/spec 会被 Claude 识别为 Skill 名称
-/spec new
-/spec create
-/spec score
+/spec new /spec create /spec score
 
 # ✅ 正确：通过 /spec-writer 对话
 /spec-writer
-You: 我想创建一个新文档
 ```
-
-### 备选：手动使用（不推荐）
-
-```bash
-# 复制模板
-cp templates/all_in_one.template.md my_project_spec.md
-
-# 按照 [填写说明] 手动填写
-
-# 参考示例
-templates/examples/all_in_one.example.md
-```
-
-**缺点**：
-- ❌ 需要手动填写 100+ 个字段
-- ❌ 容易遗漏章节
-- ❌ 不知道写得好不好
-- ❌ 格式容易不规范
 
 ---
 
 ## 📝 版本变更
 
+### v1.0.0 (2026-05-27) — templates/README.md
+
+- 新增 `hld_backend.template.md` v1.0.0 声明（分片输出）
+- 新增 `brd_prd.template.md` v1.1.0 声明
+- 修正使用方式为 `/spec-writer`
+
 ### v1.1.0 (2026-02-27)
 
-**重大变更**：明确文档边界为"方案论证专用"
-
-- ✅ **新增**：技术实施要点（替代"实施计划"）
-- ✅ **新增**：技术债务与已知问题（替代"风险与待办"）
-- ✅ **移除**：项目管理内容（里程碑、任务排期、人力分配）
-- ✅ **更新**：supported_sections（7 个章节）
-
-### v1.0.0 (2026-02-27)
-
-- ✅ 初始版本，支持 All-in-One 三段论文档
+- 明确文档边界为"方案论证专用"
+- 新增技术实施要点、技术债务与已知问题
 
 ---
 
 ## 🔗 相关文档
 
-- **项目总 README**：[../README.md](../README.md) - **强烈推荐阅读**
+- **项目总 README**：[../README.md](../README.md)
 - **spec-writer Skill**：[../.claude/skills/spec-writer/SKILL.md](../.claude/skills/spec-writer/SKILL.md)
 - **示例文档**：[examples/all_in_one.example.md](examples/all_in_one.example.md)
-
----
-
-**🎉 推荐使用 spec-writer Skill，让 AI 帮你生成文档！**
-
-```bash
-/spec-writer
-```
-
-**然后通过对话告诉 AI 你想做什么**：
-```
-You: 我想创建一个新功能的方案文档
-AI: 好的，我来帮你创建...
-```

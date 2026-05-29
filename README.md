@@ -389,7 +389,9 @@ doc-template/
 │   │       └── drafts/                       # 草稿目录（gitignore）
 │   │           └── draft-20260227-103000.json
 ├── templates/                                # 模板目录（AI 读取）
-│   ├── all_in_one.template.md                # AI 使用的模板
+│   ├── all_in_one.template.md                # All-in-One 三段论模板
+│   ├── brd_prd.template.md                   # BRD + PRD 两段论模板
+│   ├── hld_backend.template.md               # 后端架构设计模板（分片输出）
 │   └── examples/                             # 示例文档
 │       └── all_in_one.example.md
 ├── .claude/
