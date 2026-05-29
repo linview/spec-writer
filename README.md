@@ -1,4 +1,4 @@
-# Doc Template - AI 驱动的工程规范文档生成系统
+# Spec Writer - AI 驱动的工程规范文档生成系统
 
 > ⚠️ **重要**：这不是让你手动填空的模板！
 >
@@ -268,7 +268,7 @@ AI: ✓ 已读取父文档
 - ✅ 风险点（结合父文档已知风险）
 
 **AI 不会推断**（需要你提供）：
-- ❌ 工期估算、人力分配（留给 scrum_master）
+- ❌ 工期估算、人力分配（不属于方案论证范围）
 - ❌ 具体的业务细节（你最清楚）
 
 ### 3. 对话式交互的优势
@@ -315,15 +315,12 @@ spec-writer Skill（对话式）：
 
 ### ❌ spec-writer 不写什么？
 
-**项目管理内容**（交给 scrum_master Skill）：
+**项目管理内容**（不属于 spec-writer 范围）：
 
-```markdown
-## Sprint Plan（由 scrum_master 负责）
 - 任务分解（Story-001, Story-002...）
 - 工期估算（Story-001: 3天, @张三）
 - 里程碑（M1: Day 3, M2: Day 7）
 - 交付验收（UAT 测试、发布）
-```
 
 **为什么分离？**
 - 方案论证 = **解决问题**（业务价值 + 产品设计 + 技术方案）
@@ -331,13 +328,13 @@ spec-writer Skill（对话式）：
 
 ---
 
-## 🔗 角色协作：spec-writer vs scrum_master
+## 🔗 角色协作：方案论证 → 项目管理
 
 ```
 ┌─────────────────────────────────────────────────────────┐
 │  Phase 1: 方案论证（spec-writer Skill）                   │
 │  ├─ 通过对话创建方案论证文档                              │
-│  ├─ 包含：BRD + PRD + Design Spec                        │
+│  ├─ 包含：BRD + PRD + Design Spec / HLD                  │
 │  ├─ 耗时：5-15 分钟                                      │
 │  └─ 输出：depot/{team}/{project}/xxx_spec_v1.0.0.md      │
 └─────────────────────────────────────────────────────────┘
@@ -345,34 +342,11 @@ spec-writer Skill（对话式）：
                     [方案评审通过]
                            ↓
 ┌─────────────────────────────────────────────────────────┐
-│  Phase 2: 项目管理（scrum_master Skill）                  │
+│  Phase 2: 项目管理                                        │
 │  ├─ 基于方案文档创建 Sprint Plan                         │
 │  ├─ 包含：任务分解、工期估算、里程碑                      │
 │  └─ 输出：sprint-plan-sprint23.md                        │
 └─────────────────────────────────────────────────────────┘
-```
-
-### 实际案例
-
-**阶段 1：使用 spec-writer 创建方案文档**
-```bash
-/spec-writer
-You: 创建 CI Health Tracker Dashboard 功能方案文档
-
-→ 生成: ci-health-tracker_feature-dashboard_v1.0.0.md
-→ 包含: BRD、PRD、Design Spec、技术实施要点
-→ 评分: 9.5/10
-→ 耗时: 8 分钟
-```
-
-**阶段 2：使用 scrum_master 创建 Sprint Plan**
-```bash
-/scrum_master
-You: 基于方案文档 ci-health-tracker_feature-dashboard_v1.0.0.md 创建 Sprint Plan
-
-→ 生成: sprint-plan-sprint23.md
-→ 包含: Story 分解、任务分配（Story-001: 3天, @张三）
-→ 里程碑: M1 (Day 3), M2 (Day 7)
 ```
 
 ---
@@ -380,7 +354,7 @@ You: 基于方案文档 ci-health-tracker_feature-dashboard_v1.0.0.md 创建 Spr
 ## 📂 文档存储结构
 
 ```
-doc-template/
+spec-writer/
 ├── depot/                                    # AI 生成的文档仓库
 │   ├── devops/                               # 团队
 │   │   └── ci-health-tracker/                # 项目
@@ -443,7 +417,7 @@ doc-template/
 
 3. **不要混淆职责**
    - ❌ 不要在方案文档中写"工期 2 周，2 人"
-   - ✅ 项目管理内容交给 scrum_master Skill
+   - ✅ 方案论证聚焦于"为什么做 + 做什么 + 怎么做"
 
 ---
 
@@ -470,7 +444,7 @@ doc-template/
 
 **迁移指南**：
 - v1.0.0 文档仍可使用，但建议升级到 v1.1.0 模板
-- 项目管理内容请迁移到 scrum_master Skill
+- 项目管理内容不属于 spec-writer 范围
 
 ---
 
